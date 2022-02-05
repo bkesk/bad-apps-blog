@@ -65,3 +65,6 @@ Now you can start a (non-production) instance of the app with Flask, which uses 
 - "Alice and Bob Learn Application Security" by Tanya Janca (@shehackspurple) : https://shehackspurple.ca/books/ : This is an introductory-level textbook on AppSec. It covers all the topics needed to get started on this project, and much more!
 - the Flask website: https://flask.palletsprojects.com/en/2.0.x/ : has many useful guides on developing, testing, deploying, etc.
 
+## Licensing Informaiton
+
+This project is derivative of code which is redistributed under the original project's BSD 3-clause license. See LICENSE.rst for details.
