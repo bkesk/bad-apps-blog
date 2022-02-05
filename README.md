@@ -6,7 +6,7 @@ This app is a project that I started to practice application security (AppSec),
 especially designing / writing secure code.
 The initial version of this blog web application is based on the official 
 [Flask tutorial](https://flask.palletsprojects.com/en/2.0.x/tutorial/)
-which provides a full walk-through. That finished version of that project can
+which provides a full walk-through. The finished version of that project can
 be found at the official Pallets Github repo: https://github.com/pallets/flask/tree/2.0.2/examples/tutorial.
 The last section of the Flask tutorial challenges the interested learner to implement a few 
 additional features. In this project, I will attempt to implement
