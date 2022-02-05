@@ -6,8 +6,9 @@ This app is a project that I started to practice application security (AppSec),
 especially designing / writing secure code.
 The initial version of this blog web application is based on the official 
 [Flask tutorial](https://flask.palletsprojects.com/en/2.0.x/tutorial/)
-which provides a full walk-through. The last section of the
-Flask tutorial challenges the interested learner to implement a few 
+which provides a full walk-through. That finished version of that project can
+be found at the official Pallets Github repo: https://github.com/pallets/flask/tree/2.0.2/examples/tutorial.
+The last section of the Flask tutorial challenges the interested learner to implement a few 
 additional features. In this project, I will attempt to implement
 those features while "pushing left" (security-wise) in the software 
 development life cycle (SDLC) of this app.
@@ -64,3 +65,6 @@ Now you can start a (non-production) instance of the app with Flask, which uses 
 - "Alice and Bob Learn Application Security" by Tanya Janca (@shehackspurple) : https://shehackspurple.ca/books/ : This is an introductory-level textbook on AppSec. It covers all the topics needed to get started on this project, and much more!
 - the Flask website: https://flask.palletsprojects.com/en/2.0.x/ : has many useful guides on developing, testing, deploying, etc.
 
+## Licensing Informaiton
+
+This project is derivative of code which is redistributed under the original project's BSD 3-clause license. See LICENSE.rst for details.
