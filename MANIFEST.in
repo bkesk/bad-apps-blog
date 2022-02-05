@@ -1,0 +1,4 @@
+include bad_apps_blog/schema.sql
+graft bad_apps_blog/static
+graft bad_apps_blog/templates
+global-exclude *.pyc
