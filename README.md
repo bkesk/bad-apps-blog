@@ -1,7 +1,7 @@
 # Bad Apps : Blog
 An *initially* insecure blog web app intended as a starting point for practice with basic application security.
 
-![example workflow](https://github.com/bkesk/bad-apps-blog/actions/workflows/build_test/badge.svg)
+![Build and Test](https://github.com/bkesk/bad-apps-blog/actions/workflows/python-app.yml/badge.svg)
 
 ## About
 This app is a project that I started to practice application security (AppSec),
