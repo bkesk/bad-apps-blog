@@ -1,5 +1,6 @@
 # Bad Apps : Blog
 An *initially* insecure blog web app intended as a starting point for practice with basic application security.
+The final goal is to make the app secure enough to be exposed to the internet.
 
 ![Build and Test](https://github.com/bkesk/bad-apps-blog/actions/workflows/python-app.yml/badge.svg)
 
@@ -66,6 +67,7 @@ Now you can start a (non-production) instance of the app with Flask, which uses 
 
 - "Alice and Bob Learn Application Security" by Tanya Janca (@shehackspurple) : https://shehackspurple.ca/books/ : This is an introductory-level textbook on AppSec. It covers all the topics needed to get started on this project, and much more!
 - the Flask website: https://flask.palletsprojects.com/en/2.0.x/ : has many useful guides on developing, testing, deploying, etc.
+  - see specifically the "Security Considerations" section: https://flask.palletsprojects.com/en/2.0.x/security/
 
 ## Licensing Informaiton
 
