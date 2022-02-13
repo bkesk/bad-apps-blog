@@ -1,7 +1,7 @@
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -51,9 +51,11 @@ def login():
         ).fetchone() # this probably protects from db user dumping by forcing only one response
 
         if user is None:
-            error = 'Incorrect username.'
+            current_app.logger.warning(f'Failed login : Incorrect username.')
+            error = 'login failed'
         elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+            current_app.logger.warning(f'Failed login : Incorrect password.')
+            error = 'login failed'
 
         if error is None:
             session.clear()
