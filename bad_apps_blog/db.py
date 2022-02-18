@@ -1,19 +1,23 @@
+from mimetypes import init
 import sqlite3
 
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 
+def gen_db():
+    db = sqlite3.connect(
+        current_app.config['DATABASE'],
+        detect_types=sqlite3.PARSE_DECLTYPES
+    )
+    db.row_factory = sqlite3.Row
+    return db
+
 def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
+        g.db = gen_db()
 
     return g.db
-
 
 def close_db(e=None):
     db = g.pop('db', None)
@@ -21,11 +25,28 @@ def close_db(e=None):
     if db is not None:
         db.close()
 
-def init_db():
-    db = get_db()
+def init_db(db=None):
+    if db is None:
+        db = get_db()
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
+
+@click.command('migrate-db')
+def migrate_db_command():
+   
+    # create new database using db.backup(back_db, )
+    new_db = gen_db()
+    init_db(db=new_db)
+
+    # check if current db is consistent with 'schema.sql'
+
+
+    # if yes, cleanup and exit
+
+    # if no, add new columns as needed
+
+
 
 @click.command('init-db')
 @with_appcontext
