@@ -1,5 +1,12 @@
+-- Database schema version 0.0.1
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
+
+CREATE TABLE app_details (
+  detail_id INTEGER PRIMARY KEY CHECK (detail_id = 0),
+  db_version TEXT NOT NULL,
+  app_version TEXT NOT NULL
+);
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

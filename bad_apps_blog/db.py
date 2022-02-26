@@ -32,6 +32,18 @@ def init_db(db=None):
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
+    db.execute(
+        'INSERT INTO app_details (db_version)'
+        ' VALUES (?)',
+        (current_app.config['DB_VERSION'])
+        )
+
+    db.execute(
+        'INSERT INTO app_details (app_version)'
+        ' VALUES (?)',
+        (current_app.config['APP_VERSION'])
+        )
+
 @click.command('migrate-db')
 def migrate_db_command():
    
