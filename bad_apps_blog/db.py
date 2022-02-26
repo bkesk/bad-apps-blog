@@ -1,4 +1,3 @@
-from mimetypes import init
 import sqlite3
 
 import click

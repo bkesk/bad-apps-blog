@@ -1,4 +1,3 @@
-import tempfile
 import pytest
 
 def test_init_config_command(runner, monkeypatch):
