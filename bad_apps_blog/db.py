@@ -32,16 +32,11 @@ def init_db(db=None):
         db.executescript(f.read().decode('utf8'))
 
     db.execute(
-        'INSERT INTO app_details (db_version)'
-        ' VALUES (?)',
-        (current_app.config['DB_VERSION'])
+        'INSERT INTO app_details (detail_id, db_version, app_version)'
+        ' VALUES (?, ?, ?)',
+        (0, current_app.config['DB_VERSION'],current_app.config['APP_VERSION'])
         )
 
-    db.execute(
-        'INSERT INTO app_details (app_version)'
-        ' VALUES (?)',
-        (current_app.config['APP_VERSION'])
-        )
 
 @click.command('migrate-db')
 def migrate_db_command():
