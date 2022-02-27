@@ -63,6 +63,21 @@ Now you can start a (non-production) instance of the app with Flask, which uses 
 (bad_apps_blog_venv) $ flask run
 ```
 
+## Updating Bad Apps: Blog
+
+Bad Apps: Blog can be updated to the most recent commit using standard `$ git pull origin`, assuming it was installed as described above.
+The app will need to be restarted if it was running during the update for some updates to take effect.
+
+Some new features involve changes to the sqlite database schema.
+This may break instances of Bad Apps: Blog which use older versions of the database schema.
+For now, the database needs to be updated manually, or a fresh instance should be created.
+[sqlitebrowser](https://sqlitebrowser.org/) is a useful tool for manually exploring/editing a sqlite database.
+
+This web app is currently developed for practice.
+For the time being, the app is not meant for any production deployments.
+Because of this, graceful database updates is not a priority.
+A database migration tool is planned so that future updates are more reliable and can performed "in place" for existing app instances.
+
 ## Resources:
 
 - "Alice and Bob Learn Application Security" by Tanya Janca (@shehackspurple) : https://shehackspurple.ca/books/ : This is an introductory-level textbook on AppSec. It covers all the topics needed to get started on this project, and much more!
