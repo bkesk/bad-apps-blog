@@ -25,7 +25,7 @@ def register():
         elif not password:
             error = 'Password is required.'
         
-        if displayname is None:
+        if displayname is None or displayname == '':
             displayname = username
 
         # Need to validate that the requested displayname is not an existing username
