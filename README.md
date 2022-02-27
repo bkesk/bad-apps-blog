@@ -43,7 +43,7 @@ Bad Apps : Blog can be easily installed by cloning this repo, then using `pip`.
 (bad_apps_blog_venv) $ pip install -e .
 ```
 
-You will also need to Flask that you want it to run Bad Apps Blog by setting the `FLASK_APP` 
+You will also need to tell Flask that you want it to run Bad Apps Blog by setting the `FLASK_APP` 
 environment variable. In bash, this can be done with:
 
 ```
