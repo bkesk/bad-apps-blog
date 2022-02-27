@@ -1,3 +1,4 @@
+import logging
 import functools
 
 from flask import (
@@ -27,6 +28,16 @@ def register():
         if displayname is None:
             displayname = username
 
+        # Need to validate that the requested displayname is not an existing username
+        user = db.execute(
+            'SELECT * FROM user WHERE username = ?', (displayname,)
+        ).fetchone()
+
+        if user is not None:
+            error = f"Display name {displayname} is currently in use."
+            logging.warning(f'User registration failed : Reason : attempted to register and existing username ({user["username"]}) as display name')
+            
+
         if error is None:
             try:
                 db.execute(
@@ -34,8 +45,16 @@ def register():
                     (username, displayname, generate_password_hash(password)),
                 )
                 db.commit()
-            except db.IntegrityError:
-                error = f"User {username} is already registered."
+            except db.IntegrityError as e:
+                if 'username' in str(e):
+                    error = f"User {username} is already registered."
+                    logging.info(f'User registration failed : Reason : {error}')
+                elif 'displayname' in str(e):
+                    error = f"Display name {displayname} is currently in use."
+                    logging.info(f'User registration failed : Reason : {error}')
+                else:
+                    error = "Registration failed."
+                    logging.warning(f'user registration failed due to DB integrity - error message: {e}')
             else:
                 return redirect(url_for("auth.login"))
 
