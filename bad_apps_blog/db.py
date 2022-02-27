@@ -38,21 +38,7 @@ def init_db(db=None):
         )
 
 
-@click.command('migrate-db')
-def migrate_db_command():
-   
-    # create new database using db.backup(back_db, )
-    new_db = gen_db()
-    init_db(db=new_db)
-
-    # check if current db is consistent with 'schema.sql'
-
-
-    # if yes, cleanup and exit
-
-    # if no, add new columns as needed
-
-
+# TODO: Add Database Migration click command
 
 @click.command('init-db')
 @with_appcontext
