@@ -6,6 +6,9 @@ name: Python Build and Test
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'bad_apps_blog/**'
+      - 'tests/**'
   workflow_dispatch:
 
 jobs:
