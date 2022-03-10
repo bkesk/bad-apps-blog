@@ -92,3 +92,17 @@ def test_delete(client, auth, app):
         assert post is None
 
 
+def test_detail(client, auth, app):
+    response = client.get('/1000/detail')
+    assert response.status_code == 404
+
+    response = client.get('/1/detail')
+    assert response.status_code == 200
+    assert b'Edit' not in response.data
+    assert b'test title' in response.data
+    assert b'Alice' in response.data
+
+    auth.login()
+    response = client.get('/1/detail')
+    assert b'Edit' in response.data
+
