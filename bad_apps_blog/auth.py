@@ -35,7 +35,7 @@ def register():
 
         if user is not None:
             error = f"Display name {displayname} is currently in use."
-            logging.warning(f'User registration failed : Reason : attempted to register and existing username ({user["username"]}) as display name')
+            current_app.logger.warning(f' [SECURITY] User registration failed : Reason : attempted to register and existing username ({user["username"]}) as display name')
             
 
         if error is None:
@@ -48,14 +48,15 @@ def register():
             except db.IntegrityError as e:
                 if 'username' in str(e):
                     error = f"User {username} is already registered."
-                    logging.info(f'User registration failed : Reason : {error}')
+                    current_app.logger.info(f'User registration failed : Reason : {error}')
                 elif 'displayname' in str(e):
                     error = f"Display name {displayname} is currently in use."
-                    logging.info(f'User registration failed : Reason : {error}')
+                    current_app.logger.info(f'User registration failed : Reason : {error}')
                 else:
                     error = "Registration failed."
-                    logging.warning(f'user registration failed due to DB integrity - error message: {e}')
+                    current_app.logger.error(f'user registration failed due to DB integrity - error message: {e}')
             else:
+                current_app.logger.info(f' [SECURITY] User {username} registered with displayname {displayname}')
                 return redirect(url_for("auth.login"))
 
         flash(error)
@@ -83,6 +84,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
+            current_app.logger.info(f' [SECURITY] successful login for user {username} ')
             return redirect(url_for('index'))
 
         flash(error)
@@ -103,6 +105,7 @@ def load_logged_in_user():
 
 @bp.route('/logout')
 def logout():
+    current_app.logger.info(f' [SECURITY] user {g.user["username"]} logged out')
     session.clear()
     return redirect(url_for('index'))
 
@@ -110,6 +113,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
+            current_app.logger.info(f' [SECURITY] attempted to access {view} with authentication')
             return redirect(url_for('auth.login'))
 
         return view(**kwargs)
