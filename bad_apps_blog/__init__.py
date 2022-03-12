@@ -23,6 +23,11 @@ import secrets
 
 from flask import Flask
 
+import logging
+
+# just for temporary development purposes: will handle logging config through the app config.
+logging.basicConfig(filename='test.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -35,17 +40,20 @@ def create_app(test_config=None):
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
+        app.logger.info('loading configuraion from config.py in instance folder')
     else:
         # load the test config if passed in
         test_config['SECRET_KEY'] = secrets.token_hex(32)
         app.config.from_mapping(test_config)
+        app.logger.info('generating test configuration')
 
 
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
-    except OSError:
-        pass
+        app.logger.info('created instance folder')
+    except OSError as e:
+        app.logger.info('instance folder already exists')
 
     # register the config generator with the current app instance
     from . import gen_config
