@@ -10,7 +10,7 @@ def gen_db():
         detect_types=sqlite3.PARSE_DECLTYPES
     )
     db.row_factory = sqlite3.Row
-    current_app.logger.info('Connected to SQL database')
+    current_app.logger.info('[db] Connected to SQL database')
     return db
 
 def get_db():
@@ -24,7 +24,7 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
-        current_app.logger.info('Closed connection to SQL database')
+        current_app.logger.info('[db] Closed connection to SQL database')
 
 
 def init_db(db=None):
