@@ -25,8 +25,8 @@ from flask import Flask
 
 import logging
 
-# just for temporary development purposes: will handle logging config through the app config.
-logging.basicConfig(filename='test.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+
+logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 def create_app(test_config=None):
     # create and configure the app
