@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, current_app
 )
 from werkzeug.exceptions import abort
 
@@ -32,6 +32,7 @@ def create():
         if error is not None:
             flash(error)
         else:
+            current_app.logger.info('new post created')
             db = get_db()
             db.execute(
                 'INSERT INTO post (title, body, author_id)'
@@ -39,6 +40,7 @@ def create():
                 (title, body, g.user['id'])
             )
             db.commit()
+            current_app.logger.info('new post successfully commited to db')
             return redirect(url_for('blog.index'))
 
     return render_template('blog/create.html')
@@ -51,10 +53,17 @@ def get_post(id, check_author=True):
         (id,)
     ).fetchone()
 
+    try:
+        assert isinstance(id, int)
+    except AssertionError:
+        current_app.logger.error(f' [BUG] Recieved "id" which is not an integer : enforce with "/<int:id>/" in all routes.')
+
     if post is None:
-        abort(404, f"Post id {id} doesn't exist.") # is this injectable?
+        current_app.logger.info(f' [SECURITY] attempted to access post {id} which does not exist')
+        abort(404, f"Post doesn't exist.")
 
     if check_author and post['author_id'] != g.user['id']:
+        current_app.logger.info(f' [SECURITY] attempted to access priviledged view of post {id} whithout authZ')
         abort(403)
 
     return post
@@ -75,6 +84,7 @@ def update(id):
         if error is not None:
             flash(error)
         else:
+            current_app.logger.info(f'post {id} updated')
             db = get_db()
             db.execute(
                 'UPDATE post SET title = ?, body = ?'
@@ -82,6 +92,7 @@ def update(id):
                 (title, body, id)
             )
             db.commit()
+            current_app.logger.info(f'post {id} updates successfully commited to db')
             return redirect(url_for('blog.index'))
 
     return render_template('blog/update.html', post=post)
@@ -91,9 +102,11 @@ def update(id):
 @login_required
 def delete(id):
     get_post(id)
+    current_app.logger.warning(f' [SECURITY] post {id} is being deleted')
     db = get_db()
     db.execute('DELETE FROM post WHERE id = ?', (id,))
     db.commit()
+    current_app.logger.info(f' [SECURITY] delete post {id} successfully commited to db')
     return redirect(url_for('blog.index'))
 
 
