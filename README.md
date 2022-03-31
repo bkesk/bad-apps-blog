@@ -1,6 +1,7 @@
 # Bad Apps : Blog
-An *initially* insecure blog web app intended as a starting point for practice with basic application security.
-The final goal is to make the app secure enough to be exposed to the internet.
+An insecure blog web app intended as a starting point for practice with basic application security.
+The goal is to add features, and explore possible vulnerabilities, what they look like in code, and how 
+to fix/prevent those vulnerabilities.
 
 ![Build and Test](https://github.com/bkesk/bad-apps-blog/actions/workflows/python-app.yml/badge.svg)
 
