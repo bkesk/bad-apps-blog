@@ -35,7 +35,7 @@ def register():
 
         if user is not None:
             error = f"Display name {displayname} is currently in use."
-            current_app.logger.warning(f' [SECURITY] User registration failed : Reason : attempted to register and existing username ({user["username"]}) as display name')
+            current_app.logger.warning(f' [SECURITY] User registration failed : Reason : attempted to register an existing username ({user["username"]}) as display name')
             
 
         if error is None:
@@ -113,7 +113,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            current_app.logger.info(f' [SECURITY] attempted to access {view} with authentication')
+            current_app.logger.info(f' [SECURITY] unauthenticated user attempted to access {view}')
             return redirect(url_for('auth.login'))
 
         return view(**kwargs)

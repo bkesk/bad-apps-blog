@@ -53,9 +53,14 @@ def get_post(id, check_author=True):
         (id,)
     ).fetchone()
 
+    try:
+        assert isinstance(id, int)
+    except AssertionError:
+        current_app.logger.error(f' [BUG] Recieved "id" which is not an integer : enforce with "/<int:id>/" in all routes.')
+
     if post is None:
         current_app.logger.info(f' [SECURITY] attempted to access post {id} which does not exist')
-        abort(404, f"Post id {id} doesn't exist.") # is this injectable?
+        abort(404, f"Post doesn't exist.")
 
     if check_author and post['author_id'] != g.user['id']:
         current_app.logger.info(f' [SECURITY] attempted to access priviledged view of post {id} whithout authZ')
