@@ -82,8 +82,8 @@ A database migration tool is planned so that future updates are more reliable an
 ## Resources:
 
 - "Alice and Bob Learn Application Security" by Tanya Janca (@shehackspurple) : https://shehackspurple.ca/books/ : This is an introductory-level textbook on AppSec. It covers all the topics needed to get started on this project, and much more!
-- the Flask website: https://flask.palletsprojects.com/en/2.0.x/ : has many useful guides on developing, testing, deploying, etc.
-  - see specifically the "Security Considerations" section: https://flask.palletsprojects.com/en/2.0.x/security/
+- the Flask website: https://flask.palletsprojects.com/en/2.1.x/ : has many useful guides on developing, testing, deploying, etc.
+  - see specifically the "Security Considerations" section: https://flask.palletsprojects.com/en/2.1.x/security/
 
 ## Licensing Informaiton
 
