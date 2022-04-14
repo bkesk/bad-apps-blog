@@ -31,6 +31,9 @@ Feel free to fork this repository if you would like to practice AppSec this way.
 
 ## Installation:
 
+
+### using git and pip
+
 It is recommended that you begin with fresh virtual environment,
 
 ```
@@ -62,6 +65,64 @@ Now you can start a (non-production) instance of the app with Flask, which uses 
 
 ```
 (bad_apps_blog_venv) $ flask run
+```
+
+### as a Container
+
+Bad Apps: Blog can be built from the Containerfile using standard container engines like Docker, Podman, etc.
+We'll use podman here, since it can run containers in rootless made, but the same commands work for Docker.
+
+First, you will need to download the Containerfile. From the directory with the Containerfile, run:
+
+```
+$ podman build -t bad_apps .
+```
+
+You can run the container with a **nonpersistent database** using:
+
+```
+$ podman run --rm -p 5000 bad_apps:test sh -c "flask init-db; flask init-config; flask run --host=0.0.0.0"
+```
+
+When using this command, Podman (or Docker) will automatically forward a local port to port 5000 of the container.
+You can check which port using: `$ podman ps`, and you can navigate to the app in your browser at `http://localhost:[port from podman ps]`.
+
+The configuration file, `config.py` contains secrets, and should not be included in a container image.
+Before, we ran in a script within the container to generate a `config.py` file within the container, but 
+we may want to use a specific `config.py` in practice.
+Instead, use the container engine's secret manager.
+
+First, make a 'secret':
+
+```
+$ podman secret create [name of secret] /path/on/host/conf.py
+```
+
+To include the secret configuration file use:
+
+```
+podman run --rm -p 5000 --secret blog_conf \
+       sh -c "mkdir /var/www/app/instance; ln -s /run/secrets/blog_conf /var/www/app/instance/config.py; flask init-db; flask run --host=0.0.0.0"
+```
+
+note that this will create a fresh (empty) database instance for the app within the container.
+
+Finally, we will usually want to mount an existing database so that application data is persistent.
+We can use a volume for this.
+
+```
+podman run --rm -ti -p 5000 --secret blog_conf \
+           --volume /path/on/host/to/db/:/var/www/app/db/:Z \
+           bad_apps sh -c "mkdir /var/www/app/instance; ln -s /run/secrets/blog_conf /var/www/app/instance/config.py; sh"
+```
+
+The `:Z` option instructs podman to relable the mounted directory for SELinux.
+
+**Important:** We need to tell Bad Apps: Blog where to find the database, since it will not be inside the instance folder.
+You can simply add the following to your `config.py` file:
+
+```
+DATABASE="/var/www/app/db/[name of db file]"
 ```
 
 ## Updating Bad Apps: Blog
