@@ -10,6 +10,7 @@ def init_config():
         current_app.logger.info(f' {__name__} : Configuration is incomplete : generating configuration file in instance folder')
         with open(os.path.join(current_app.instance_path, 'config.py'), 'a') as f:
             f.write('SECRET_KEY="'+secrets.token_hex(32)+'"')
+            f.write("SESSION_COOKIE_SAMESITE='Strict'")
         return "Initialized config.py"
     else:
         current_app.logger.info(f' {__name__} : Configuration is complete : no action necessary')
