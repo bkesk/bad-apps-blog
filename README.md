@@ -111,9 +111,9 @@ Finally, we will usually want to mount an existing database so that application 
 We can use a volume for this.
 
 ```
-podman run --rm -ti -p 5000 --secret blog_conf \
+podman run --rm -p 5000 --secret blog_conf \
            --volume /path/on/host/to/db/:/var/www/app/db/:Z \
-           bad_apps sh -c "mkdir /var/www/app/instance; ln -s /run/secrets/blog_conf /var/www/app/instance/config.py; sh"
+           bad_apps sh -c "mkdir /var/www/app/instance; ln -s /run/secrets/blog_conf /var/www/app/instance/config.py; flask run --host=0.0.0.0"
 ```
 
 The `:Z` option instructs podman to relable the mounted directory for SELinux.
