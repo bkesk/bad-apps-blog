@@ -3,7 +3,7 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
-from bad_apps_blog.auth import login_required
+from bad_apps_blog.auth import login_required, csrf_proect
 from bad_apps_blog.db import get_db
 
 bp = Blueprint('blog', __name__)
@@ -20,7 +20,8 @@ def index():
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
-def create():
+@csrf_proect
+def create(token=None):
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
@@ -43,7 +44,10 @@ def create():
             current_app.logger.info('new post successfully commited to db')
             return redirect(url_for('blog.index'))
 
-    return render_template('blog/create.html')
+    if token is not None:
+        return render_template('blog/create.html', csrf=token)
+    else:
+        return render_template('blog/create.html')
 
 def get_post(id, check_author=True):
     post = get_db().execute(
@@ -70,7 +74,8 @@ def get_post(id, check_author=True):
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
-def update(id):
+@csrf_proect
+def update(id, token=None):
     post = get_post(id)
 
     if request.method == 'POST':
@@ -95,11 +100,15 @@ def update(id):
             current_app.logger.info(f'post {id} updates successfully commited to db')
             return redirect(url_for('blog.index'))
 
-    return render_template('blog/update.html', post=post)
+    if token is not None:
+        return render_template('blog/update.html', post=post, csrf=token)
+    else:
+        return render_template('blog/update.html', post=post)
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
+@csrf_proect
 def delete(id):
     get_post(id)
     current_app.logger.warning(f' [SECURITY] post {id} is being deleted')

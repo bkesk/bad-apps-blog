@@ -23,3 +23,9 @@ CREATE TABLE post (
   body TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
+
+CREATE_TABLE csrf (
+  id INTEGER UNIQUE PRIMARY KEY,
+  token TEXT UNIQUE NOT NULL,
+  expire INTEGER NOT NULL
+);
