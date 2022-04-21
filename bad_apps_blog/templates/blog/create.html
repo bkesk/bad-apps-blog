@@ -12,8 +12,6 @@
     <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
     {% if csrf is defined %}
       <input type="hidden" name="form_number" value="{{ csrf }}">
-    {% else -%}
-      <input type="hidden" name="form_number" value="">
     {% endif %}
     <input type="submit" value="Save">
   </form>

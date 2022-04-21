@@ -14,17 +14,13 @@
     <input type="submit" value="Save">
    {% if csrf is defined %}
      <input type="hidden" name="form_number" value="{{ csrf }}">
-     {% else -%}
-     <input type="hidden" name="form_number" value="">
    {% endif %}
   </form>
   <hr>
   <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
     <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
     {% if csrf is defined %}
-    <input type="hidden" name="form_number" value="{{ csrf }}">
-      {% else -%}
-    <input type="hidden" name="form_number" value="">
+      <input type="hidden" name="form_number" value="{{ csrf }}">
     {% endif %}
   </form>
 {% endblock %}
