@@ -35,6 +35,7 @@ def create_app(test_config=None):
         APP_VERSION = '0.0.1',
         DB_VERSION = '0.0.1',
         DATABASE=os.path.join(app.instance_path, 'bad_apps_blog.sqlite'),
+        CSRF_TOKEN_AGE = 3600 # seconds
     )
 
     if test_config is None:
@@ -44,6 +45,7 @@ def create_app(test_config=None):
     else:
         # load the test config if passed in
         test_config['SECRET_KEY'] = secrets.token_hex(32)
+        test_config['CSRF_TOKEN_AGE'] = 2
         app.config.from_mapping(test_config)
         app.logger.info('generating test configuration')
 

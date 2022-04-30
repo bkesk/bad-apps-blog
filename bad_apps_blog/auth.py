@@ -183,7 +183,7 @@ def gen_csrf_token():
             db.execute(
                 'UPDATE csrf SET token = ?, expire = ?'
                 'WHERE id = ?',
-                (token, time.time() + 3600.0, user_id)
+                (token, time.time() + current_app.config['CSRF_TOKEN_AGE'], user_id)
             )
             db.commit()
             return token
@@ -194,7 +194,7 @@ def gen_csrf_token():
         db.execute(
             'INSERT INTO csrf (id, token, expire)'
             'VALUES (?, ?, ?)',
-            (user_id, token, time.time() + 3600.0 )
+            (user_id, token, time.time() + current_app.config['CSRF_TOKEN_AGE'] )
         )
         db.commit()
         return token
