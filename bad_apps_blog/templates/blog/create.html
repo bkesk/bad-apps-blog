@@ -10,6 +10,9 @@
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
+    {% if csrf is defined %}
+      <input type="hidden" name="form_number" value="{{ csrf }}">
+    {% endif %}
     <input type="submit" value="Save">
   </form>
 {% endblock %}

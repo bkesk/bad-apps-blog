@@ -1,5 +1,8 @@
 import logging
 import functools
+import time
+import secrets
+
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
@@ -120,3 +123,81 @@ def login_required(view):
 
     return wrapped_view
 
+
+def csrf_proect(view):
+    '''
+    Wrapper to apply token-based CSRF protection.
+
+    on GET, should get token and render in a hidden field
+    on POST, should check the token
+    '''
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        user_id = session.get('user_id')
+
+        if request.method == 'POST':
+            current = get_db().execute(
+            'SELECT * FROM csrf WHERE id = ?', (user_id,)).fetchone()
+            
+            # check that the token is not None
+            try:
+                # Q: do I need to process the "input" token in any way?
+                # I'm not making a db query based on the token given in the form, 
+                #   if there any validation needed though?
+                assert current['token'] == request.form['form_number']
+                current_app.logger.info(f' [SECURITY] CSRF token match for user {user_id}')
+                assert current['expire'] > time.time()
+                current_app.logger.info(f' [SECURITY] CSRF token is unexpired for {user_id}')
+                return view(**kwargs)
+            except AssertionError:
+                current_app.logger.error(f' [SECURITY] Possible CSRF attack : CSRF token does not match for user {user_id}')
+                return redirect(url_for('index')), 403
+
+        elif request.method == 'GET':
+            token = gen_csrf_token()
+            return view(token=token,**kwargs)
+    
+    return wrapped_view
+
+
+def gen_csrf_token():
+    '''
+    Generate and track a CSRF token.
+    '''
+    user_id = session.get('user_id')
+
+    db = get_db()
+    current = db.execute(
+            'SELECT * FROM csrf WHERE id = ?', (user_id,)
+        ).fetchone()
+
+    if current is not None:
+        if current['expire'] > time.time():
+            # reissue current token
+            current_app.logger.info(f' [SECURITY] re-issued non-expired CSRF token to user {user_id}')
+            return current['token']
+        else:
+            # generate / update new token
+            current_app.logger.info(f' [SECURITY] updated expired CSRF token for user {user_id}')
+            token = secrets.token_hex(64)
+            db.execute(
+                'UPDATE csrf SET token = ?, expire = ?'
+                'WHERE id = ?',
+                (token, time.time() + current_app.config['CSRF_TOKEN_AGE'], user_id)
+            )
+            db.commit()
+            return token
+    elif current is None:
+        # TODO: use app configuration to set expiration age of CSRF tokens
+        current_app.logger.info(f' [SECURITY] generated new CSRF token for user {user_id}')        
+        token = secrets.token_hex(64)
+        db.execute(
+            'INSERT INTO csrf (id, token, expire)'
+            'VALUES (?, ?, ?)',
+            (user_id, token, time.time() + current_app.config['CSRF_TOKEN_AGE'] )
+        )
+        db.commit()
+        return token
+    else:
+        logging.error('Failed to generate CSRF token')
+        return None

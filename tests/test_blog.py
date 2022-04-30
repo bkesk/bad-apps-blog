@@ -35,11 +35,10 @@ def test_author_required(app, client, auth):
 
     auth.login()
     # current user can't modify other user's post
-    assert client.post('/1/update').status_code == 403
-    assert client.post('/1/delete').status_code == 403
+    assert client.post('/1/update', data={'form_number' : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'}).status_code == 403
+    assert client.post('/1/delete', data={'form_number' : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'}).status_code == 403
     # current user doesn't see edit link
     assert b'href="/1/update"' not in client.get('/').data
-
 
 @pytest.mark.parametrize('path', (
     '/2/update',
@@ -47,15 +46,15 @@ def test_author_required(app, client, auth):
 ))
 def test_exists_required(client, auth, path):
     auth.login()
-    assert client.post(path).status_code == 404
+    assert client.post(path, data={'form_number' : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'}).status_code == 404
 
 
 def test_create(client, auth, app):
     auth.login()
-    assert client.get('/create').status_code == 200
-    client.post('/create', data={'title': 'created', 'body': ''})
+    assert client.get('/create', follow_redirects=True).status_code == 200
+    client.post('/create', data={'title': 'created', 'body': '', 'form_number' : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'})
 
-    with app.app_context():
+    with app.app_context():   
         db = get_db()
         count = db.execute('SELECT COUNT(id) FROM post').fetchone()[0]
         assert count == 2
@@ -64,7 +63,7 @@ def test_create(client, auth, app):
 def test_update(client, auth, app):
     auth.login()
     assert client.get('/1/update').status_code == 200
-    client.post('/1/update', data={'title': 'updated', 'body': ''})
+    client.post('/1/update', data={'title': 'updated', 'body': '', 'form_number' : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'})
 
     with app.app_context():
         db = get_db()
@@ -78,12 +77,12 @@ def test_update(client, auth, app):
 ))
 def test_create_update_validate(client, auth, path):
     auth.login()
-    response = client.post(path, data={'title': '', 'body': ''})
+    response = client.post(path, data={'title': '', 'body': '', 'form_number' : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'})
     assert b'Title is required.' in response.data
 
 def test_delete(client, auth, app):
     auth.login()
-    response = client.post('/1/delete')
+    response = client.post('/1/delete', data={'form_number' : 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'})
     assert response.headers['Location'] == '/'
 
     with app.app_context():
