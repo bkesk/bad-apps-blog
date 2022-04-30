@@ -149,9 +149,9 @@ def csrf_proect(view):
                 assert current['expire'] > time.time()
                 current_app.logger.info(f' [SECURITY] CSRF token is unexpired for {user_id}')
                 return view(**kwargs)
-            except:
+            except AssertionError:
                 current_app.logger.error(f' [SECURITY] Possible CSRF attack : CSRF token does not match for user {user_id}')
-                return redirect(url_for('index'))
+                return redirect(url_for('index')), 403
 
         elif request.method == 'GET':
             token = gen_csrf_token()
