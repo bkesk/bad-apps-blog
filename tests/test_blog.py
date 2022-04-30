@@ -40,7 +40,6 @@ def test_author_required(app, client, auth):
     # current user doesn't see edit link
     assert b'href="/1/update"' not in client.get('/').data
 
-# use CSRF fixture to get token / include it in the POST request
 @pytest.mark.parametrize('path', (
     '/2/update',
     '/2/delete',

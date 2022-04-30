@@ -1,5 +1,8 @@
+import time
 import pytest
 from flask import g, session
+from werkzeug.security import generate_password_hash
+
 from bad_apps_blog.db import get_db
 
 
@@ -58,3 +61,24 @@ def test_logout(client, auth):
         auth.logout()
         assert 'user_id' not in session
 
+
+def test_gen_csrf_token(client, auth, app, caplog):
+
+    with app.app_context():
+        get_db().execute(
+            "INSERT INTO user (username, displayname, password) VALUES (?, ?, ?)",
+                    ('newuser', 'Player3', generate_password_hash('test')),
+                )
+
+        response = auth.login(username='newuser', password='test')
+        assert response.headers['Location'] == '/'
+
+        client.get('/create')
+        assert "generated new CSRF token for user" in caplog.text
+
+        client.get('/create')
+        assert "re-issued non-expired CSRF token to user" in caplog.text
+
+        time.sleep(3)
+        client.get('/create')
+        assert "updated expired CSRF token for user" in caplog.text
