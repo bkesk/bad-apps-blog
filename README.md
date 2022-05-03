@@ -9,7 +9,7 @@ to fix/prevent those vulnerabilities.
 This app is a project that I started to practice application security (AppSec),
 especially designing / writing secure code.
 The initial version of this blog web application is based on the official 
-[Flask tutorial](https://flask.palletsprojects.com/en/2.0.x/tutorial/)
+[Flask tutorial](https://flask.palletsprojects.com/en/2.1.x/tutorial/)
 which provides a full walk-through. The finished version of that project can
 be found at the official Pallets Github repo: https://github.com/pallets/flask/tree/2.0.2/examples/tutorial.
 The last section of the Flask tutorial challenges the interested learner to implement a few 
@@ -34,7 +34,7 @@ Feel free to fork this repository if you would like to practice AppSec this way.
 
 ### using git and pip
 
-It is recommended that you begin with fresh virtual environment,
+It is recommended that you begin with a fresh virtual environment,
 
 ```
 $ python -m venv bad_apps_blog_venv
@@ -54,14 +54,14 @@ environment variable. In bash, this can be done with:
 (bad_apps_blog_venv) $ export FLASK_APP=bad_apps_blog
 ```
 
-Bad Apps : blog uses SQLite, and you will need to initialize the database in order for the web app
+Bad Apps : Blog uses SQLite, and you will need to initialize the database in order for the web app
 to work properly.
 
 ```
 (bad_apps_blog_venv) $ flask db-init
 ```
 
-Now you can start a (non-production) instance of the app with Flask, which uses Werkzeug as an http server, like this:
+Now you can start a (non-production) instance of the app with Flask like this:
 
 ```
 (bad_apps_blog_venv) $ flask run
@@ -70,7 +70,7 @@ Now you can start a (non-production) instance of the app with Flask, which uses 
 ### as a Container
 
 Bad Apps: Blog can be built from the Containerfile using standard container engines like Docker, Podman, etc.
-We'll use podman here, since it can run containers in rootless made, but the same commands work for Docker.
+We'll use Podman here, since it can run containers in rootless mode, but the same commands work for Docker.
 
 First, you will need to download the Containerfile. From the directory with the Containerfile, run:
 
@@ -84,15 +84,16 @@ You can run the container with a **nonpersistent database** using:
 $ podman run --rm -p 5000 bad_apps:test sh -c "flask init-db; flask init-config; flask run --host=0.0.0.0"
 ```
 
-When using this command, Podman (or Docker) will automatically forward a local port to port 5000 of the container.
+When using this command, Podman (or Docker) will automatically forward a port on the host to port 5000 of the container.
 You can check which port using: `$ podman ps`, and you can navigate to the app in your browser at `http://localhost:[port from podman ps]`.
 
 The configuration file, `config.py` contains secrets, and should not be included in a container image.
-Before, we ran in a script within the container to generate a `config.py` file within the container, but 
-we may want to use a specific `config.py` in practice.
-Instead, use the container engine's secret manager.
+The `--rm` command was used to ensure that no image containing a `config.py` file is saved.
+In the command above, we ran a script within the container to generate a `config.py` file, but 
+we may want to use a specific `config.py` from outside of the container.
+To securely share a file containing secrets with the container, we can use the container engine's secret manager.
 
-First, make a 'secret':
+First, make a Podman 'secret' (Docker has a similar feature/syntax):
 
 ```
 $ podman secret create [name of secret] /path/on/host/conf.py
@@ -116,29 +117,15 @@ podman run --rm -p 5000 --secret blog_conf \
            bad_apps sh -c "mkdir /var/www/app/instance; ln -s /run/secrets/blog_conf /var/www/app/instance/config.py; flask run --host=0.0.0.0"
 ```
 
-The `:Z` option instructs podman to relable the mounted directory for SELinux.
+The `:Z` option instructs podman to re-lable the mounted directory for SELinux. Some hosts and/or container engines will not need this option.
 
 **Important:** We need to tell Bad Apps: Blog where to find the database, since it will not be inside the instance folder.
-You can simply add the following to your `config.py` file:
+We can simply add the following to the `config.py` file. Below is a sample config.py file
 
-```
+```python
+SECRET_KEY=[a long random key]
 DATABASE="/var/www/app/db/[name of db file]"
 ```
-
-## Updating Bad Apps: Blog
-
-Bad Apps: Blog can be updated to the most recent commit using standard `$ git pull origin`, assuming it was installed as described above.
-The app will need to be restarted if it was running during the update for some updates to take effect.
-
-Some new features involve changes to the sqlite database schema.
-This may break instances of Bad Apps: Blog which use older versions of the database schema.
-For now, the database needs to be updated manually, or a fresh instance should be created.
-[sqlitebrowser](https://sqlitebrowser.org/) is a useful tool for manually exploring/editing a sqlite database.
-
-This web app is currently developed for practice.
-For the time being, the app is not meant for any production deployments.
-Because of this, graceful database updates is not a priority.
-A database migration tool is planned so that future updates are more reliable and can performed "in place" for existing app instances.
 
 ## Resources:
 
