@@ -120,7 +120,7 @@ podman run --rm -p 5000 --secret blog_conf \
 The `:Z` option instructs podman to re-lable the mounted directory for SELinux. Some hosts and/or container engines will not need this option.
 
 **Important:** We need to tell Bad Apps: Blog where to find the database, since it will not be inside the instance folder.
-We can simply add the following to the `config.py` file. Below is a sample config.py file
+We can add a database string the `config.py` file. Below is a sample `config.py` file.
 
 ```python
 SECRET_KEY=[a long random key]
